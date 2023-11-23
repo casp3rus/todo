@@ -26,6 +26,7 @@ func main() {
 	add := flag.Bool("add", false, "Add task to the ToDo list")
 	list := flag.Bool("list", false, "List all tasks")
 	complete := flag.Int("complete", 0, "Item to be completed")
+	delete := flag.Int("delete", 0, "Delete a task")
 
 	flag.Parse()
 
@@ -71,6 +72,21 @@ func main() {
 
 		// Add task to list
 		l.Add(t)
+
+		// Save the new list
+		if err := l.Save(todoFileName); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	case *delete > 0:
+		if *delete > len(*l) {
+			fmt.Fprintln(os.Stderr, "Invalid task number, here is a list of existing tasks:")
+			fmt.Print(l)
+			os.Exit(1)
+		}
+
+		// Delete the task
+		l.Delete(*delete)
 
 		// Save the new list
 		if err := l.Save(todoFileName); err != nil {
